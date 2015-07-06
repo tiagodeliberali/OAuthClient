@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace OAuthClient
+namespace OAuth.Client
 {
     public interface IOAuthClient
     {

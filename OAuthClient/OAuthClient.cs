@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using OAuth;
 
-namespace OAuthClient
+namespace OAuth.Client
 {
     public class OAuthClient : IOAuthClient
     {
