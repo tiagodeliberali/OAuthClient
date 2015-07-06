@@ -1,3 +1,5 @@
+Still in alpha... I will do some renames and file moves today...
+
 #OAuthClient
 
 OAuth client for .net as a Portable class.
