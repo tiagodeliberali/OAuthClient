@@ -2,7 +2,7 @@
 
 namespace OAuthClient
 {
-    public interface IOAuthServer
+    public interface IOAuthClient
     {
         Task<string> GetStringResponse(string url);
         Task<RequestTokenInfo> GetRequestTokenInfo();

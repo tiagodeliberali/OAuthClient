@@ -40,8 +40,8 @@
   <ItemGroup>
     <Compile Include="AccessTokenInfo.cs" />
     <Compile Include="IOAuthResources.cs" />
-    <Compile Include="IOAuthServer.cs" />
-    <Compile Include="OAuthServer.cs" />
+    <Compile Include="IOAuthClient.cs" />
+    <Compile Include="OAuthClient.cs" />
     <Compile Include="OAuth\OAuthRequest.cs" />
     <Compile Include="OAuth\OAuthRequestType.cs" />
     <Compile Include="OAuth\OAuthSignatureMethod.cs" />

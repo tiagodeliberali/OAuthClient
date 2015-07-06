@@ -5,11 +5,11 @@ using OAuth;
 
 namespace OAuthClient
 {
-    public class OAuthServer : IOAuthServer
+    public class OAuthClient : IOAuthClient
     {
         private IOAuthResources OAuthResources { get; set; }
 
-        public OAuthServer(IOAuthResources resources)
+        public OAuthClient(IOAuthResources resources)
         {
             OAuthResources = resources;
         }
