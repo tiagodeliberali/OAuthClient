@@ -38,7 +38,6 @@ namespace OAuth500pxClient
 {
     public class OAuth500pxResources : IOAuthResources
     {
-        // interface IOAuthResources
         public string ConsumerKey { 
             get { return "CONSUMER_KEY_FROM_YOUR_500PX_DEV_ACCOUNT"; } 
         }
