@@ -1,49 +1,68 @@
-Still in alpha... I will do some renames and file moves today...
-
 #OAuthClient
 
-OAuth client for .net as a Portable class.
+OAuthClient is a portable class library for .net that implements OAuth 1.0a, allowing access sites like 500px.com.
 
-This class implements a portable version of [OAuth](https://github.com/danielcrenna/oauth), by Daniel Crenna, encapsulated with async methods, 
-to facilitate test and implementation of OAuth clients.
+This project do some changes to [OAuth](https://github.com/danielcrenna/oauth), by Daniel Crenna, to turn it into a portable class library, 
+removing Silverlight capabilities.
 
-##How to Use
+In addition, it creates a client class with async methods and simple interface, to facilitate test and implementation of OAuth clients.
 
-The usage of the cass is very straightforward. You must create an instance of OAuthServer, passing as parameter an instance of 
-your implementation of IOAuthResources. This interface defines the expected values used by OAuthServer to communicate with the real OAuth server.
+##Basic flow
 
-**IMPORTANT: You must create you own implementation of IOAuthResources, with the values of your OAuth server.**
+Thinking about [how OAuth 1.0a works](http://www.cubrid.org/blog/dev-platform/dancing-with-oauth-understanding-how-authorization-works/), 
+we can organise its flow in 4 stages:
 
-OAuthServer class implements IOAuthServer interface, to facilitate tests and mocks.
+* Get a Request Token from Service Provider
+* Redirect User to the Service Provider authentication page, passing the Request Token
+* Get the Verifier from the Service Provider, through the Callback url
+* Take all information gathered until now to request the Access Token
 
-###1. Get request token information
+##Using OAuthClient
+
+OAuthClient encapsulate this flow usng async methods, very suitable for windows applications. 
+
+Also, OAuthClient requires as a constructor parameter an instance of IOAuthResources, that must be implemented by you, with the values relevant to
+your OAuth server.
+
+Here is an example of implementation to access the 500px api:
 
 ```csharp
-using OAuthClient;
+using OAuth.Client;
 
-...
-
-var oAuthServer = new OAuthServer(new OAuthResources());
-var requestTokenInfo = await oAuthServer.GetRequestTokenInfo();
+namespace OAuth500pxClient
+{
+    public class OAuth500pxResources : IOAuthResources
+    {
+        // interface IOAuthResources
+        public string ConsumerKey       { get { return "CONSUMER_KEY_FROM_YOUR_500PX_DEV_ACCOUNT"; } }
+        public string ConsumerSecret    { get { return "CONSUMER_SECRET_FROM_YOUR_500PX_DEV_ACCOUNT"; } }
+        public string AccessTokenURL    { get { return "https://api.500px.com/v1/oauth/access_token"; } }
+        public string AuthorizeURL      { get { return "https://api.500px.com/v1/oauth/authorize"; } }
+        public string RequestTokenURL   { get { return "https://api.500px.com/v1/oauth/request_token"; } }
+        public string CallbackURL       { get { return "https://notification500px.azure-mobile.net/callback"; } }
+    }
+}
 ```
 
-###2. Get the verifier
+Now, let's see a simple example of an Windows 8.1 application using our client.
 
-Send the user to RequestTokenInfo.AccessUrl and get the Verifier code from the OAuth server
 
+###1. Get request token information and send the user to be authenticated by the Service Provider
 
 ```csharp
 // SomePage.xaml.cs
-using OAuthClient;
+using OAuth.Client;
 
 ...
-
-    private async void Button_Click(object sender, RoutedEventArgs e)
+    // button click event to login to the 500px api using OAuth
+    private async void LoginButton_Click(object sender, RoutedEventArgs e)
     {
-        var oAuthServer = new OAuthServer(new OAuthResources());
+        var client = new OAuthClient(new OAuth500pxResources());
     
-        App.RequestTokenInfo = await oAuthServer.GetRequestTokenInfo();
+        // RequestTokenInfo is kept as a static public property of App.xaml.cs
+        App.RequestTokenInfo = await client.GetRequestTokenInfo();
 
+        // Uses WebAuthenticationBroker to get the Verifier, after the user login and authorize you app on 500px
         var requestUrl = new System.Uri(App.RequestTokenInfo.AccessUrl);
         var callbackUrl = new System.Uri(App.RequestTokenInfo.CallbackUrl);
 
@@ -51,30 +70,34 @@ using OAuthClient;
     }
 ```
 
-###3. Get the access token
+###2. Recover Verifier and get the Access Token
 
-After the user get authenticated to the OAuth server, get the verifier token, set it to the previously created RequestTokenInfo instance, than pass 
-it to the GetAccessToken method.
+After the user get authenticated to the OAuth server, WebAuthenticationBroker will get the callback url parameters,
+including the verifier, and will pass it to the OnActivated method on App.xaml.cs.
 
 ```csharp
 // App.xaml.cs
-using OAuthClient;
+using OAuth.Client;
 
 ...
-
+    // This property will be filled by LoginButton_Click on SomePage.xaml.cs
     public static RequestTokenInfo RequestTokenInfo { get; set; }
     
+    // After user completes the authentication and authorize the Consumer, this method is called with
+    // the values passed to the callback url as a query string. It includes the verifier.
     protected async override void OnActivated(IActivatedEventArgs args)
     {
         if (args.Kind == ActivationKind.WebAuthenticationBrokerContinuation)
         {
             var webAuthenticationBrokerArg = args as WebAuthenticationBrokerContinuationEventArgs;
 
-            RequestTokenInfo.Verifier = webAuthenticationBrokerArg.WebAuthenticationResult.ResponseData.Split('=')[2];
+            // We will add this missing information to the RequestTokenInfo
+            RequestTokenInfo.Verifier = GetVerifierFromParameters(webAuthenticationBrokerArg.WebAuthenticationResult.ResponseData);
 
-            var oAuthServer = new OAuthServer(new OAuthResources());
+            var client = new OAuthClient(new OAuth500pxResources());
 
-            var accessTokenInfo = await oAuthServer.GetAccessToken(RequestTokenInfo);
+            // Gets the Access Token from Service Provider
+            var accessTokenInfo = await client.GetAccessToken(RequestTokenInfo);
         }
 
         base.OnActivated(args);
