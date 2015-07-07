@@ -4,8 +4,7 @@ namespace OAuth.Client
 {
     public interface IOAuthClient
     {
-        Task<string> GetStringResponse(string url);
-        Task<RequestTokenInfo> GetRequestTokenInfo();
+        Task<RequestTokenInfo> GetRequestToken();
         Task<AccessTokenInfo> GetAccessToken(RequestTokenInfo requestTokenInfo);
     }
 }

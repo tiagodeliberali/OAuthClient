@@ -1,38 +1,31 @@
 ﻿using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
-using OAuth;
 
 namespace OAuth.Client
 {
     public class OAuthClient : IOAuthClient
     {
-        private IOAuthResources OAuthResources { get; set; }
+        private IOAuthResources Resources { get; set; }
+        private IOauthTools Tools { get; set; }
 
-        public OAuthClient(IOAuthResources resources)
+
+        public OAuthClient(IOAuthResources resources, IOauthTools tools)
         {
-            OAuthResources = resources;
+            Resources = resources;
+            Tools = tools;
         }
 
-        public async Task<string> GetStringResponse(string url)
-        {
-            var client = new HttpClient();
-            var responseString = await client.GetStringAsync(url);
-
-            return responseString;
-        }
-
-        public async Task<RequestTokenInfo> GetRequestTokenInfo()
+        public async Task<RequestTokenInfo> GetRequestToken()
         {
             OAuthRequest client = OAuthRequest.ForRequestToken(
-                OAuthResources.ConsumerKey,
-                OAuthResources.ConsumerSecret,
-                OAuthResources.CallbackURL);
+                Resources.ConsumerKey,
+                Resources.ConsumerSecret,
+                Resources.CallbackURL);
 
-            client.RequestUrl = OAuthResources.RequestTokenURL;
+            client.RequestUrl = Resources.RequestTokenURL;
 
             // Using URL query authorization
-            var responseString = await GetStringResponse(string.Format("{0}?{1}", client.RequestUrl, client.GetAuthorizationQuery()));
+            var responseString = await Tools.GetStringResponse(string.Format("{0}?{1}", client.RequestUrl, client.GetAuthorizationQuery()));
 
             var tokenValues = GetTokenValues(responseString);
 
@@ -41,9 +34,9 @@ namespace OAuth.Client
             requestTokenInfo.RequestToken = tokenValues[0];
             requestTokenInfo.RequestSecret = tokenValues[1];
             requestTokenInfo.CallbackConfirmed = tokenValues[2];
-            requestTokenInfo.CallbackUrl = OAuthResources.CallbackURL;
+            requestTokenInfo.CallbackUrl = Resources.CallbackURL;
 
-            requestTokenInfo.AccessUrl = string.Format("{0}?oauth_token={1}", OAuthResources.AuthorizeURL, requestTokenInfo.RequestToken);
+            requestTokenInfo.AccessUrl = string.Format("{0}?oauth_token={1}", Resources.AuthorizeURL, requestTokenInfo.RequestToken);
 
             return requestTokenInfo;
         }
@@ -51,15 +44,15 @@ namespace OAuth.Client
         public async Task<AccessTokenInfo> GetAccessToken(RequestTokenInfo requestTokenInfo)
         {
             var client = OAuthRequest.ForAccessToken(
-                OAuthResources.ConsumerKey,
-                OAuthResources.ConsumerSecret,
+                Resources.ConsumerKey,
+                Resources.ConsumerSecret,
                 requestTokenInfo.RequestToken,
                 requestTokenInfo.RequestSecret,
                 requestTokenInfo.Verifier);
 
-            client.RequestUrl = OAuthResources.AccessTokenURL;
+            client.RequestUrl = Resources.AccessTokenURL;
 
-            var accessTokenString = await GetStringResponse(client.RequestUrl + "?" + client.GetAuthorizationQuery());
+            var accessTokenString = await Tools.GetStringResponse(client.RequestUrl + "?" + client.GetAuthorizationQuery());
 
             var tokenValues = GetTokenValues(accessTokenString);
 
@@ -70,6 +63,7 @@ namespace OAuth.Client
 
             return accessTokenInfo;
         }
+
 
         private List<string> GetTokenValues(string token)
         {
