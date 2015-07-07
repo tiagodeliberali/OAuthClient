@@ -2,8 +2,13 @@
 
 OAuthClient is a portable class library for .net that implements OAuth 1.0a, allowing access sites like 500px.com.
 
-This project do some changes to [OAuth](https://github.com/danielcrenna/oauth), by Daniel Crenna, to turn it into a portable class library, 
-removing Silverlight capabilities.
+This project do some changes to [OAuth](https://github.com/danielcrenna/oauth), by Daniel Crenna, to turn it into a portable class library. 
+This portable class library targets:
+
+* .NET Framework 4.5
+* Windows 8
+* Windows Phone 8.1
+* WIndows Phone Silverlight 8
 
 In addition, it creates a client class with async methods and simple interface, to facilitate test and implementation of OAuth clients.
 
