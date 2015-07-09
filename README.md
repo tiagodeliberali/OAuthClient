@@ -73,7 +73,7 @@ using OAuth.Client;
     // button click event to login to the 500px api using OAuth
     private async void LoginButton_Click(object sender, RoutedEventArgs e)
     {
-        var client = new OAuthClient(new OAuth500pxResources());
+        var client = new OAuthClient(new OAuth500pxResources(), new OAuthClientTools());
     
         // RequestTokenInfo is kept as a static public property of App.xaml.cs
         App.RequestTokenInfo = await client.GetRequestTokenInfo();
@@ -114,7 +114,7 @@ using OAuth.Client;
             RequestTokenInfo.Verifier = GetVerifierFromParameters(
                 webBrokerArg.WebAuthenticationResult.ResponseData);
 
-            var client = new OAuthClient(new OAuth500pxResources());
+            var client = new OAuthClient(new OAuth500pxResources(), new OAuthClientTools());
 
             // Gets the Access Token from Service Provider
             var accessTokenInfo = await client.GetAccessToken(RequestTokenInfo);
