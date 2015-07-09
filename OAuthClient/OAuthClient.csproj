@@ -42,9 +42,9 @@
     <Compile Include="AccessTokenInfo.cs" />
     <Compile Include="IOAuthResources.cs" />
     <Compile Include="IOAuthClient.cs" />
-    <Compile Include="IOauthTools.cs" />
+    <Compile Include="IOauthClientTools.cs" />
     <Compile Include="OAuthClient.cs" />
-    <Compile Include="OauthTools.cs" />
+    <Compile Include="OauthClientTools.cs" />
     <Compile Include="OAuth\OAuthRequest.cs" />
     <Compile Include="OAuth\OAuthRequestType.cs" />
     <Compile Include="OAuth\OAuthSignatureMethod.cs" />

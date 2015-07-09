@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace OAuth.Client
 {
-    public class OauthTools : IOauthTools
+    public class OauthClientTools : IOauthClientTools
     {
         public async Task<string> GetStringResponse(string url)
         {

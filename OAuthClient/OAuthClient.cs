@@ -6,10 +6,10 @@ namespace OAuth.Client
     public class OAuthClient : IOAuthClient
     {
         private IOAuthResources Resources { get; set; }
-        private IOauthTools Tools { get; set; }
+        private IOauthClientTools Tools { get; set; }
 
 
-        public OAuthClient(IOAuthResources resources, IOauthTools tools)
+        public OAuthClient(IOAuthResources resources, IOauthClientTools tools)
         {
             Resources = resources;
             Tools = tools;

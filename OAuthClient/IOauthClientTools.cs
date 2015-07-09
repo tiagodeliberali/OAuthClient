@@ -2,7 +2,7 @@
 
 namespace OAuth.Client
 {
-    public interface IOauthTools
+    public interface IOauthClientTools
     {
         Task<string> GetStringResponse(string url);
     }

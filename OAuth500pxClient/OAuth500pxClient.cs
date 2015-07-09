@@ -8,9 +8,9 @@ namespace OAuth.Client500px
     {
         private IOAuth500pxResources Resources { get; set; }
         private AccessTokenInfo AccessToken { get; set; }
-        private IOauthTools Tools { get; set; }
+        private IOauthClientTools Tools { get; set; }
 
-        public OAuth500pxClient(AccessTokenInfo accessTokenInfo, IOauthTools tools, IOAuth500pxResources resources)
+        public OAuth500pxClient(AccessTokenInfo accessTokenInfo, IOauthClientTools tools, IOAuth500pxResources resources)
         {
             AccessToken = accessTokenInfo;
             Tools = tools;
